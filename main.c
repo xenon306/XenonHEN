@@ -4,49 +4,48 @@
 #include <orbis/libnotification.h>
 
 // Constants and Settings:
+#define TARGET_FW 0x0D02 // This is the 13.02 firmware's hexadecimal code
 #define XenonHEN_VERSION "v1.0a"
-#define DEVELOPER "Xenon Tech"
 
-// Functions
-// This function sends the PS4 a message
-void send_notification(const* message) {
-    // In OpenOrbis the sceNotify is the original call
+void send_notification(const char* message) {
     sceNotify(0, message);
 }
 
-// Here comes the 13.02 fw patches, we use v01dcat's bugs (after it becomes public)
-void apply_xenon_patches() {
-    // First we request the kernel's base address (we need an exploit for this, XenonExploit maybe will come)
-    // uint64_t kbase = get_kernel_base();
+// This function requests the exact firmware version
+int get_fw_version() {
+    char sdk_ver[20];
+    int mib[2];
+    size_t len;
 
-    // Here we enable fPKG and Debug Settings
-    // Example, if we write the offset here, we write the memory:
-    // kernel_write(kbase + 0xABC123, "\x90\x90", 2);
+    // The system's internal call to request the firmware version
+    // Note: In OpenOrbis, we use sceKernelGetSystemSwVersion
+    int version = 0;
+    size_t v_len = sizeof(version);
+    sysctlbyname("kern.sdk_version", &version, &v_len, NULL, 0);
 
-    // If the patches are applied, then we send the user a message:
-    send_notification("XenonHEN: Patches applied!");
+    return (version >>16); // We give back the main version, for example (0x0D02)
 }
 
-// This is XenonHEN's entry point
 int _main(void) {
-    // Inicializing
-    // Here we prepare the system to run the code
-    // Welcome Message:
-    char welcome_msg[100];
-    char dev_msg[100];
+    // Notification
+    send_notification("XenonHEN Initializing...");
 
-    // We compose the text
-    __builtin_sprintf(welcome_msg, "XenonHEN %s loaded!", XenonHEN_VERSION);
-    __builtin_sprintf(dev_msg, "Coded by: %s", DEVELOPER);
+    // We check the version
+    int current_fw = get_fw_version();
 
-    // We show it on the screen
-    send_notification(welcome_msg);
-    send_notification(dev_msg);
+    if (current_fw != TARGET_FW) {
+        char error_msg[100];
+        __builtin_sprintf(error_msg, "Error: FW %04X not supported! XenonHEN needs 13.02.", current_fw);
+        send_notification(error_msg);
+        return -1; // We stop XenonHEN, because its not safe to run if the firmware is not supported
+    }
 
-    // We start the jailbreaking process
-    apply_xenon_patches();
+    // If the version is matching, we can continue running XenonHEN
+    send_notification("Firmware 13.02 detected!");
+    send_notification("XenonHEN v1.0a Loaded! Coded by: Xenon");
 
-    // We exit, but the settings are staying in the memory
+    // Here is going to be the future patches
+    // apply_1302_patches();
+
     return 0;
 }
-
