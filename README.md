@@ -1,6 +1,8 @@
 # XenonHEN
 **The next generation Homebrew Enabler (HEN) for PS4 13.02 fw!**
 
+*It's not available yet until a kernel exploit comes out*
+
 ---
 
 ## What is XenonHEN?
