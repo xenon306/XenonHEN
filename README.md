@@ -18,6 +18,6 @@
 ## Build
 To translate, you will need the OpenOrbis PS4 SDK. It will be coming as XenonHEN_v1.0a.bin
 
-If you need to translate, type this in the terminal
+If you need to translate, type this in the terminal:
 '''bash
 make
