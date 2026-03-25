@@ -9,6 +9,7 @@
 **XenonHEN** is a custom jailbreak payload, using **OpenOrbis SDK**.
 
 ## Current state (v1.0a)
+- [x] Checking the firmware, and if the firmware is not matches, we stop XenonHEN
 - [x] OpenOrbis Integration
 - [x] Notification system
 - [x] Makefile-based translating
